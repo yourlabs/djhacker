@@ -26,13 +26,13 @@ def test_formfield(model):
         strip=False,
     )
 
-    TestForm = modelform_factory(model, fields='__all__')
-    result = TestForm.base_fields['charfield']
+    form = modelform_factory(model, fields='__all__')
+    result = form.base_fields['charfield']
     assert isinstance(result, forms.UUIDField)
     assert not result.strip
 
     # test against unwanted side effect
-    assert not isinstance(TestForm.base_fields['intfield'], forms.UUIDField)
+    assert not isinstance(form.base_fields['intfield'], forms.UUIDField)
 
 
 def test_registry(model):
@@ -52,6 +52,6 @@ def test_register(model):
 
     # you don't need to pass extra arguments anymore for ForeignKey fields:
     djhacker.formfield(model.intfield)
-    TestForm = modelform_factory(model, fields='__all__')
-    result = TestForm.base_fields['intfield']
+    form = modelform_factory(model, fields='__all__')
+    result = form.base_fields['intfield']
     assert isinstance(result, forms.ChoiceField)
