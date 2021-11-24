@@ -1,0 +1,16 @@
+image: yourlabs/python
+
+qa:
+  stage: test
+  script: flake8 test_*py djhacker.py
+
+test:
+  stage: test
+  script:
+  - pip install -Ue .[test]
+  - py.test -vv --cov=djhacker --cov-report=term-missing .
+
+pypi:
+  stage: deploy
+  script: pypi-release
+  only: [tags]
