@@ -31,7 +31,12 @@ def formfield(model_field, cls=None, /, **kwargs):
 
     if not cls:
         cb = registry.get(model_field.field)
-        cls, kwargs = cb(model_field)
+        cls, kwargs = cb(model_field, **kwargs)
+
+    current = getattr(model_field.field, 'djhacker', None)
+    if current:
+        # In case of re-registration
+        model_field.field.formfield = model_field.field.djhacker['django']
 
     model_field.field.djhacker = dict(
         django=model_field.field.formfield,

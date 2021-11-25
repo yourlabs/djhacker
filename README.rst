@@ -29,10 +29,11 @@ You can register custom form field for model field types:
 .. code-block:: py
 
     @djhacker.register(models.ForeignKey)
-    def custom_fk_formfield(model_field):
-        return YourFormField, dict(
-            custom_form_field_kwarg='something',
+    def custom_fk_formfield(model_field, **kwargs):
+        return YourFormField, {
+            'custom_form_field_kwarg': 'something',
+            **kwargs,
         )
 
     # you don't need to pass extra arguments anymore for ForeignKey fields:
-    djhacker.formfield(YourModel.some_fk)
+    djhacker.formfield(YourModel.some_fk, queryset=Some.objects.all())
