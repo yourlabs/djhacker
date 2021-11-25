@@ -45,13 +45,21 @@ def test_registry(model):
 
 def test_register(model):
     @djhacker.register(models.IntegerField)
-    def custom_fk_formfield(field):
-        return forms.ChoiceField, dict(
-            choices=((1, 1), (2, 2)),
-        )
+    def custom_fk_formfield(field, **kwargs):
+        return forms.ChoiceField, {
+            'choices': ((1, 1),),
+            **kwargs,
+        }
 
     # you don't need to pass extra arguments anymore for ForeignKey fields:
     djhacker.formfield(model.intfield)
     form = modelform_factory(model, fields='__all__')
     result = form.base_fields['intfield']
     assert isinstance(result, forms.ChoiceField)
+
+    # test re-registration as well as kwargs passthrough
+    djhacker.formfield(model.intfield, choices=((2, 2),))
+    form = modelform_factory(model, fields='__all__')
+    result = form.base_fields['intfield']
+    assert isinstance(result, forms.ChoiceField)
+    assert result.choices == [(2, 2)]
