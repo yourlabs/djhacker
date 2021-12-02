@@ -21,8 +21,8 @@ This will make any Django ModelForm render a
 whatever other kwargs it wants to add, you won't have to use any specific model
 form, this will work natively in the admin for instance.
 
-Registry
-========
+Custom formfield callback
+=========================
 
 You can register custom form field for model field types:
 
