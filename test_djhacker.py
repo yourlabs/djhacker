@@ -63,3 +63,18 @@ def test_register(model):
     result = form.base_fields['intfield']
     assert isinstance(result, forms.ChoiceField)
     assert result.choices == [(2, 2)]
+
+
+def test_esm_django():
+    class Widget(forms.TextInput):
+        class Media:
+            js = ['a/b.js[c=d][e=f]', 'a.js']
+    assert Widget().media.render_js() == [
+        '<script src="/static/a/b.js%5Bc%3Dd%5D%5Be%3Df%5D"></script>',
+        '<script src="/static/a.js"></script>',
+    ]
+    djhacker.esm_django()
+    assert Widget().media.render_js() == [
+        '<script src="/static/a/b.js" c="d" e="f"></script>',
+        '<script src="/static/a.js"></script>',
+    ]

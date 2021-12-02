@@ -37,3 +37,31 @@ You can register custom form field for model field types:
 
     # you don't need to pass extra arguments anymore for ForeignKey fields:
     djhacker.formfield(YourModel.some_fk, queryset=Some.objects.all())
+
+ESM Modules in widget Media
+===========================
+
+Another feature that won't be implemented in Django is `EcmaScript Modules support
+<https://code.djangoproject.com/ticket/33336>`_. Let's have this anyway, first
+patch Django's Media render_js:
+
+.. code-block:: py
+
+    import djhacker
+    djhacker.esm_django()
+
+This will let you add script attributes to Media JS, import a module as such:
+
+.. code-block:: python
+
+    class YourWidget(forms.Widget):
+        class Media:
+            js = [
+                'your/script.js[type=module]',
+            ]
+
+It will render as such:
+
+.. code-block:: html
+
+    <script src="/static/your/script.js" type="module"></script>

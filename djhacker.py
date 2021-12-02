@@ -1,3 +1,4 @@
+import re
 import types
 
 
@@ -46,3 +47,30 @@ def formfield(model_field, cls=None, /, **kwargs):
     model_field.field.formfield = types.MethodType(
         _formfield, model_field.field
     )
+
+
+# That one was nice but we can't use it if we don't want to depend on the regex
+# module which seems to have build problems from time to time
+# ESM_RE = r'^(?P<path>[^[]+)(\[(?P<key>[^=]+)=(?P<value>[^]]+)\])*$'
+
+ATTRIBUTES = r'\[(?P<key>[^=]+)=(?P<value>[^]]+)\]'
+
+
+def esm_django():
+    from django.forms.widgets import Media
+    from django.utils.html import format_html
+
+    def _render_js(self):
+        result = []
+        for spec in self._js:
+            out = '<script src="{}"'
+            args = [self.absolute_path(spec.partition('[')[0])]
+
+            for key, value in re.findall(ATTRIBUTES, spec):
+                out += ' ' + key + '="{}"'
+                args.append(value)
+            out += '></script>'
+            result.append(format_html(out, *args))
+        return result
+    Media.django_render_js = Media.render_js
+    Media.render_js = _render_js
