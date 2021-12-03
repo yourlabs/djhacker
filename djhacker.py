@@ -56,7 +56,7 @@ def formfield(model_field, cls=None, /, **kwargs):
 ATTRIBUTES = r'\[(?P<key>[^=]+)=(?P<value>[^]]+)\]'
 
 
-def esm_django():
+def media_script_attributes():
     from django.forms.widgets import Media
     from django.utils.html import format_html
 
