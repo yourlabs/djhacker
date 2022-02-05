@@ -6,7 +6,7 @@ Basic usage
 
 Install with ``pip install djhacker`` and then:
 
-.. code-block:: py
+.. code-block:: python
 
     import djhacker
 
@@ -26,7 +26,7 @@ Custom formfield callback
 
 You can register custom form field for model field types:
 
-.. code-block:: py
+.. code-block:: python
 
     @djhacker.register(models.ForeignKey)
     def custom_fk_formfield(model_field, **kwargs):
@@ -52,7 +52,7 @@ attributes, including, but not limited to:
 
 Let's have this anyway, first patch Django's Media render_js:
 
-.. code-block:: py
+.. code-block:: python
 
     import djhacker
     djhacker.media_script_attributes()
@@ -69,6 +69,6 @@ Then, let's customize a script tag:
 
 It will render as such:
 
-.. code-block:: html
+.. code-block:: python
 
     <script src="/static/your/script.js" type="module" defer="true"></script>
