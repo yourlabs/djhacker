@@ -12,7 +12,7 @@ Install with ``pip install djhacker`` and then:
 
     djhacker.formfield(
         YourModel.your_field,
-        YourFormField,
+        form_class=YourFormField,
         custom_form_field_kwarg='something',
     )
 
@@ -30,8 +30,9 @@ You can register custom form field for model field types:
 
     @djhacker.register(models.ForeignKey)
     def custom_fk_formfield(model_field, **kwargs):
-        return YourFormField, {
-            'custom_form_field_kwarg': 'something',
+        return dict(
+            form_class=YourFormField,
+            custom_form_field_kwarg=something,
             **kwargs,
         )
 
@@ -72,3 +73,33 @@ It will render as such:
 .. code-block:: python
 
     <script src="/static/your/script.js" type="module" defer="true"></script>
+
+Upgrade
+=======
+
+To v0.2.x
+---------
+
+Registered callbacks now return a simple dict with the form field class in
+form_class.
+
+```python
+@djhacker.register(models.ForeignKey)
+def custom_fk_formfield(model_field, **kwargs):
+    return YourFormField, {
+        'custom_form_field_kwarg': 'something',
+        **kwargs,
+    )
+```
+
+Becomes:
+
+```python
+@djhacker.register(models.ForeignKey)
+def custom_fk_formfield(model_field, **kwargs):
+    return dict(
+        form_class=YourFormField,
+        custom_form_field_kwarg=something,
+        **kwargs,
+    )
+```

@@ -46,10 +46,9 @@ def test_registry(model):
 def test_register(model):
     @djhacker.register(models.IntegerField)
     def custom_fk_formfield(field, **kwargs):
-        return forms.ChoiceField, {
-            'choices': ((1, 1),),
-            **kwargs,
-        }
+        kwargs['form_class'] = forms.ChoiceField
+        kwargs['choices'] = ((1, 1),)
+        return kwargs
 
     # you don't need to pass extra arguments anymore for ForeignKey fields:
     djhacker.formfield(model.intfield)
