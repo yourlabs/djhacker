@@ -21,29 +21,36 @@ def register(field_class):
     return _register
 
 
-def formfield(model_field, cls=None, /, **kwargs):
-    def _formfield(self, *args, **kw):
-        formfield = self.djhacker['django'](*args, **{
-            'form_class': self.djhacker['cls'],
-            **self.djhacker['kwargs'],
-            **kw,
-        })
-        return formfield
+def formfield(model_field, form_class=None, /, **kwargs):
+    # Syntactic sugar of making form_class an ordered argument
+    if form_class and 'form_class' not in kwargs:
+        kwargs['form_class'] = form_class
 
-    if not cls:
-        cb = registry.get(model_field.field)
-        cls, kwargs = cb(model_field, **kwargs)
-
+    # In case of re-registration: first un-patch ModelField.formfield()
     current = getattr(model_field.field, 'djhacker', None)
     if current:
-        # In case of re-registration
         model_field.field.formfield = model_field.field.djhacker['django']
 
+    # Call registered callback if any to get more default kwargs
+    if not form_class:
+        cb = registry.get(model_field.field)
+        kwargs = {**cb(model_field, **kwargs), **kwargs}
+
+    # This function will be set onto .formfield()
+    def _formfield(self, *args, **kw):
+        # Add passed kwargs on top of registered kwargs
+        kwargs = {**self.djhacker['kwargs'], **kw}
+
+        # Call django's original formfield method with those kwargs
+        return self.djhacker['django'](*args, **kwargs)
+
+    # Save the original Django formfield() method and store kwargs on field
     model_field.field.djhacker = dict(
         django=model_field.field.formfield,
-        cls=cls,
         kwargs=kwargs,
     )
+
+    # Patch Django's formfield() method with _formfield
     model_field.field.formfield = types.MethodType(
         _formfield, model_field.field
     )
