@@ -34,7 +34,8 @@ def formfield(model_field, form_class=None, /, **kwargs):
     # Call registered callback if any to get more default kwargs
     if not form_class:
         cb = registry.get(model_field.field)
-        kwargs = {**cb(model_field, **kwargs), **kwargs}
+        if cb:
+            kwargs = {**cb(model_field, **kwargs), **kwargs}
 
     # This function will be set onto .formfield()
     def _formfield(self, *args, **kw):

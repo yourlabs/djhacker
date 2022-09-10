@@ -21,6 +21,9 @@ This will make any Django ModelForm render a
 whatever other kwargs it wants to add, you won't have to use any specific model
 form, this will work natively in the admin for instance.
 
+.. note:: `form_class` is optionnal, you may as well just pass kwargs and not
+          change the default form class for a form field.
+
 Custom formfield callback
 =========================
 

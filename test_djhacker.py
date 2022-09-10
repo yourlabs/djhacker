@@ -12,6 +12,7 @@ def model():
     class TestModel(models.Model):
         charfield = models.CharField(max_length=200)
         intfield = models.IntegerField()
+        fk = models.ForeignKey('self', on_delete=models.CASCADE)
 
         class Meta:
             app_label = 'auth'
@@ -19,17 +20,52 @@ def model():
     return TestModel
 
 
-def test_formfield(model):
+def test_formfield_noclass(model):
+    # test not passing a class
     djhacker.formfield(
         model.charfield,
-        forms.UUIDField,
-        strip=False,
+        min_length=99,
     )
 
+    # create a django modelform
     form = modelform_factory(model, fields='__all__')
-    result = form.base_fields['charfield']
-    assert isinstance(result, forms.UUIDField)
-    assert not result.strip
+
+    # test min_length override
+    charfield = form.base_fields['charfield']
+    assert isinstance(charfield, forms.CharField)
+    assert charfield.min_length == 99
+
+
+def test_formfield_class(model):
+    # test fk with class
+    class MyChoiceField(forms.ModelChoiceField):
+        pass
+
+    test_qs = model.objects.none()
+    djhacker.formfield(
+        model.fk,
+        MyChoiceField,
+        empty_label='TEST',
+    )
+
+    # create a django modelform
+    form = modelform_factory(model, fields='__all__')
+
+    # test fk with class
+    fk = form.base_fields['fk']
+    assert isinstance(fk, MyChoiceField)
+    assert fk.empty_label == 'TEST'
+
+
+def test_formfield_sideeffect(model):
+    # test not passing a class
+    djhacker.formfield(
+        model.charfield,
+        min_length=99,
+    )
+
+    # create a django modelform
+    form = modelform_factory(model, fields='__all__')
 
     # test against unwanted side effect
     assert not isinstance(form.base_fields['intfield'], forms.UUIDField)
