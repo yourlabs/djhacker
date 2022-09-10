@@ -83,23 +83,23 @@ To v0.2.x
 Registered callbacks now return a simple dict with the form field class in
 form_class.
 
-```python
-@djhacker.register(models.ForeignKey)
-def custom_fk_formfield(model_field, **kwargs):
-    return YourFormField, {
-        'custom_form_field_kwarg': 'something',
-        **kwargs,
-    )
-```
+.. code-block:: python
+
+    @djhacker.register(models.ForeignKey)
+    def custom_fk_formfield(model_field, **kwargs):
+        return YourFormField, {
+            'custom_form_field_kwarg': 'something',
+            **kwargs,
+        )
 
 Becomes:
 
-```python
-@djhacker.register(models.ForeignKey)
-def custom_fk_formfield(model_field, **kwargs):
-    return dict(
-        form_class=YourFormField,
-        custom_form_field_kwarg=something,
-        **kwargs,
-    )
-```
+.. code-block:: python
+
+    @djhacker.register(models.ForeignKey)
+    def custom_fk_formfield(model_field, **kwargs):
+        return dict(
+            form_class=YourFormField,
+            custom_form_field_kwarg=something,
+            **kwargs,
+        )
