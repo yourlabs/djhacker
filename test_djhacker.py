@@ -41,7 +41,6 @@ def test_formfield_class(model):
     class MyChoiceField(forms.ModelChoiceField):
         pass
 
-    test_qs = model.objects.none()
     djhacker.formfield(
         model.fk,
         MyChoiceField,
